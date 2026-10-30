@@ -1,0 +1,63 @@
+{
+ "nome": "JetClean",
+ "instagram": "@jetclean_360",
+ "cidade": "Itabirito-MG",
+ "contato": "Chama no direct",
+ "rodape": "@jetclean_360 · Itabirito-MG",
+ "tom": "direto, confiante e caprichado, de quem lava carro de frota de mineração todo dia; frases curtas, sem exagero",
+ "hashtags_fixas": ["#JetClean", "#LavaJato", "#Itabirito"],
+ "temas": {
+  "frota": {
+   "selo": "Lavagem de frota",
+   "hashtag": "#LavagemDeFrota",
+   "fotos": ["picape-frente", "picape-frente-2", "picape-frente-3", "picape-patio", "picape-sol", "van", "caminhao-leve"],
+   "assunto": "lavagem de frotas de empresas (picapes, vans e caminhões leves de mineradoras e prestadoras de serviço), com regularidade e sem atrasar a operação",
+   "reserva": [
+    ["Sua frota sai daqui pronta para rodar.", "pronta para rodar.", ["Picape, van e caminhão", "Atendimento a empresas", "Rapidez sem descuido"]],
+    ["Frota limpa também é cartão de visita.", "cartão de visita.", ["Lavagem completa", "Rotina para empresas", "Capricho em cada carro"]],
+    ["Barro de mina? A gente resolve.", "a gente resolve.", ["Lavagem pesada", "Chassi e caixa de roda", "Carro devolvido brilhando"]]
+   ]
+  },
+  "por-baixo": {
+   "selo": "Lavagem por baixo",
+   "hashtag": "#LavagemDeChassi",
+   "fotos": ["por-baixo"],
+   "assunto": "lavagem por baixo do carro na rampa, tirando barro e lama do chassi, suspensão e caixas de roda, o que protege contra ferrugem",
+   "reserva": [
+    ["Embaixo também precisa de banho.", "precisa de banho.", ["Rampa de lavagem", "Chassi sem barro", "Menos ferrugem"]],
+    ["O barro que você não vê corrói.", "corrói.", ["Lavagem do chassi", "Caixa de roda limpa", "Proteção pro seu carro"]]
+   ]
+  },
+  "motor": {
+   "selo": "Lavagem de motor",
+   "hashtag": "#LavagemDeMotor",
+   "fotos": ["motor-depois"],
+   "antes_depois": ["motor-antes", "motor-depois"],
+   "assunto": "lavagem de motor e cofre com cuidado, tirando a poeira de minério e o barro acumulado",
+   "reserva": [
+    ["Antes e depois do motor.", "depois do motor.", ["Cofre sem poeira", "Lavagem cuidadosa", "Fácil de ver vazamento"]],
+    ["Motor limpo, defeito à vista.", "à vista.", ["Poeira de minério fora", "Cuidado com a parte elétrica", "Manutenção mais fácil"]]
+   ]
+  },
+  "carro": {
+   "selo": "Lavagem completa",
+   "hashtag": "#CarroLimpo",
+   "fotos": ["hatch-traseira", "hatch-traseira-2", "hatch-patio", "hatch-lateral"],
+   "assunto": "lavagem completa de carro de passeio, por fora e por dentro, para quem roda todo dia",
+   "reserva": [
+    ["Carro limpo muda o dia.", "muda o dia.", ["Lavagem completa", "Por dentro e por fora", "Feito com capricho"]],
+    ["Seu carro merece esse brilho.", "esse brilho.", ["Lataria sem barro", "Rodas limpas", "Pronto no mesmo dia"]]
+   ]
+  },
+  "picape": {
+   "selo": "Picapes e utilitários",
+   "hashtag": "#Picape",
+   "fotos": ["picape-lavada", "picape-rua", "picape-rua-2", "picape-lateral"],
+   "assunto": "lavagem de picapes e utilitários que pegam estrada de terra todo dia",
+   "reserva": [
+    ["Picape de trabalho também brilha.", "também brilha.", ["Estrada de terra? Tranquilo", "Lavagem pesada", "Caçamba limpa"]],
+    ["Pegou terra? Passa aqui.", "Passa aqui.", ["Lataria e chassi", "Rodas e para-lamas", "Volta brilhando"]]
+   ]
+  }
+ }
+}
