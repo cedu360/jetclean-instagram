@@ -21,8 +21,8 @@ args = sys.argv[1:]
 TESTE = "--teste" in args
 INICIAL = int(args[args.index("--inicial") + 1]) if "--inicial" in args else 0
 
-BRANCO, CIANO = (255, 255, 255), (0, 190, 240)
-PALETAS = [((8, 22, 48), (0, 70, 120)), ((10, 12, 16), (20, 40, 60)), ((0, 46, 92), (0, 110, 170)), ((22, 26, 34), (0, 80, 100))]
+BRANCO, CIANO = (255, 255, 255), (230, 28, 36)  # CIANO = cor de destaque (vermelho da marca)
+PALETAS = [((8, 8, 10), (40, 6, 8)), ((14, 14, 16), (30, 30, 34)), ((24, 4, 6), (90, 10, 14)), ((10, 10, 12), (60, 12, 16))]
 
 def fonte(peso, t): return ImageFont.truetype(os.path.join(KIT, f"Inter-{peso}.otf"), t)
 def degrade(w, h, a, b):
@@ -63,14 +63,15 @@ def logo(c, x, y, tam=54):
     arq = os.path.join(KIT, "logo.png")
     if os.path.exists(arq):
         l = Image.open(arq).convert("RGBA"); l.thumbnail((tam * 6, tam * 2), Image.LANCZOS); c.alpha_composite(l, (x, y)); return
-    d = ImageDraw.Draw(c); f = fonte("ExtraBold", tam)
-    d.text((x, y), "Jet", font=f, fill=CIANO); d.text((x + d.textlength("Jet", font=f), y), "Clean", font=f, fill=BRANCO)
+    d = ImageDraw.Draw(c); f = fonte("ExtraBold", tam); p = fonte("Bold", max(14, tam // 3))
+    d.text((x + 2, y - tam // 3 - 4), "AUTO ESTÉTICA", font=p, fill=(200, 200, 205))
+    d.text((x, y), "JET", font=f, fill=CIANO); d.text((x + d.textlength("JET ", font=f), y), "CLEAN", font=f, fill=BRANCO)
 def selo(d, x, y, texto, tam=30):
     f = fonte("Bold", tam); w = d.textlength(texto, font=f)
-    d.rounded_rectangle((x, y, x + w + 48, y + tam + 26), (tam + 26) // 2, fill=CIANO); d.text((x + 24, y + 11), texto, font=f, fill=(6, 20, 40))
+    d.rounded_rectangle((x, y, x + w + 48, y + tam + 26), (tam + 26) // 2, fill=CIANO); d.text((x + 24, y + 11), texto, font=f, fill=BRANCO)
 def botao(d, x, y, texto, tam=38):
     f = fonte("ExtraBold", tam); w = d.textlength(texto, font=f) + 88
-    d.rounded_rectangle((x, y, x + w, y + tam + 44), (tam + 44) // 2, fill=BRANCO); d.text((x + 44, y + 20), texto, font=f, fill=(6, 20, 40))
+    d.rounded_rectangle((x, y, x + w, y + tam + 44), (tam + 44) // 2, fill=CIANO); d.text((x + 44, y + 20), texto, font=f, fill=BRANCO)
 
 def feed_a(p, tema, pal):  # foto em cima, texto embaixo
     W, H = 1080, 1350; c = degrade(W, H, *pal).convert("RGBA")
@@ -85,7 +86,7 @@ def feed_b(p, tema, pal):  # foto inteira, texto sobre a sombra
     sombra = Image.new("RGBA", (W, H), pal[0] + (255,)); c = Image.composite(sombra, c, sombra_baixo(W, H, 0.38)); d = ImageDraw.Draw(c)
     selo(d, 60, 56, tema["selo"]); y = escrever(d, p["gancho"], 60, 790, W - 120, 82, p["destaque"]) + 20
     for b in p["pontos"]: check(d, 60, y, b, 34); y += 60
-    logo(c, 60, H - 100, 46); d.text((W - 60 - d.textlength(NEG["contato"], font=fonte("SemiBold", 34)), H - 92), NEG["contato"], font=fonte("SemiBold", 34), fill=BRANCO)
+    logo(c, 60, H - 100, 46); d.text((W - 60 - d.textlength(NEG["rodape"], font=fonte("SemiBold", 30)), H - 88), NEG["rodape"], font=fonte("SemiBold", 30), fill=BRANCO)
     return c.convert("RGB")
 def feed_antes_depois(p, tema, pal):
     W, H = 1080, 1350; c = degrade(W, H, *pal).convert("RGBA"); d = ImageDraw.Draw(c)
@@ -94,13 +95,15 @@ def feed_antes_depois(p, tema, pal):
         selo(d, x + 20, 170, rot, 30)
     selo(d, 60, 56, tema["selo"]); y = escrever(d, p["gancho"], 60, 950, W - 120, 72, p["destaque"]) + 16
     d.text((60, y), " · ".join(p["pontos"][:2]), font=fonte("SemiBold", 32), fill=(210, 225, 240))
-    logo(c, 60, H - 100, 46); return c.convert("RGB")
+    logo(c, 60, H - 100, 46); d.text((W - 60 - d.textlength(NEG["rodape"], font=fonte("SemiBold", 30)), H - 88), NEG["rodape"], font=fonte("SemiBold", 30), fill=BRANCO)
+    return c.convert("RGB")
 def story(p, tema, pal):
     W, H = 1080, 1920; c = foto(random.choice(tema["fotos"]), W, H).convert("RGBA")
     sombra = Image.new("RGBA", (W, H), pal[0] + (255,)); c = Image.composite(sombra, c, sombra_baixo(W, H, 0.35, 240)); d = ImageDraw.Draw(c)
     selo(d, 70, 140, tema["selo"], 34); y = escrever(d, p["gancho"], 70, 1080, W - 140, 100, p["destaque"]) + 30
     for b in p["pontos"]: check(d, 70, y, b, 38); y += 70
-    botao(d, 70, y + 30, NEG["contato"], 42); logo(c, 70, H - 200, 56); return c.convert("RGB")
+    botao(d, 70, y + 30, NEG["contato"], 42); logo(c, 70, H - 200, 56)
+    d.text((70, H - 120), NEG["rodape"].split(" · ")[-1], font=fonte("SemiBold", 34), fill=BRANCO); return c.convert("RGB")
 
 def ahash(img):
     g = img.convert("L").resize((8, 8), Image.LANCZOS); px = list(g.tobytes()); m = sum(px) / 64
@@ -133,7 +136,8 @@ def textos(tema, usados, reserva_ok):
 def legenda(t, tema):
     tags = " ".join([tema["hashtag"]] + NEG["hashtags_fixas"])
     corpo = (t.get("legenda") or "").strip()
-    return f"{t['gancho']}\n\n" + (corpo + "\n\n" if corpo else "") + "\n".join("✅ " + x for x in t["pontos"]) + f"\n\n📍 {NEG['cidade']} · {NEG['contato']}\n\n{tags}"
+    return (f"{t['gancho']} ✨\n\n" + (corpo + "\n\n" if corpo else "") + "\n".join("✅ " + x for x in t["pontos"])
+            + f"\n\n📲 {NEG['contato']}\n📍 {NEG.get('endereco', NEG['cidade'])}\n\n{tags}")
 
 def nova_peca(slug, fila, usados, i, reserva_ok=False):
     tema = NEG["temas"][slug]; t, origem = textos(tema, usados, reserva_ok)

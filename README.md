@@ -25,7 +25,8 @@ Antes de postar o robô lê o perfil e pula o que repetiria (mesma imagem, legen
 - `negocio.json`: tudo sobre o lava jato (cidade, contato, tom, temas e textos de reserva). Mude aqui.
 - `fotos/`: fotos reais do lava jato, **com as placas e os números de frota borrados**. Foto nova só entra borrada.
 - `pecas/`: posts prontos. `fila.json`: ordem de preferência. `estado.json`: o que já saiu (não editar à mão).
-- `kit/`: fontes Inter (licença OFL). Pondo um `kit/logo.png`, ele substitui o nome escrito.
+- `kit/`: fontes Inter (licença OFL). Pondo um `kit/logo.png` (logo da Auto Estética Jet Clean), ele substitui o nome escrito.
+- Visual igual ao perfil: preto e vermelho, WhatsApp e ITABIRITO - MG no rodapé.
 
 ## Segredos (Settings > Secrets and variables > Actions)
 
