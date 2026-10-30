@@ -1,0 +1,54 @@
+# Posts do @jetclean_360 rodando sozinhos no GitHub, sem depender de ninguém ligado.
+# O token fica só no segredo IG_TOKEN deste repositório; a chave do Gemini (grátis) no segredo GEMINI_API_KEY.
+name: Instagram
+
+on:
+  schedule: # a cada 30 min (o GitHub atrasa ou pula horários); o robô decide o turno pelo relógio de Brasília
+    - cron: "17 * * * *"
+    - cron: "47 * * * *"
+  workflow_dispatch:
+    inputs:
+      turno:
+        description: "manha, reel1, tarde, reel2 ou noite (vazio = pelo horário)"
+        required: false
+      teste:
+        description: "só mostrar o que sairia"
+        type: boolean
+        default: false
+
+concurrency: instagram
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Publicar o turno
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          TURNO_MANUAL: ${{ inputs.turno }}
+          TESTE: ${{ inputs.teste && '--teste' || '' }}
+        run: |
+          T="${TURNO_MANUAL:-auto}"
+          node publicar.mjs $T $TESTE
+      - name: Fazer posts novos quando a fila está acabando (Gemini grátis)
+        if: always() && !inputs.teste
+        continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          pip install -q pillow
+          python3 gerar.py
+      - name: Guardar o que já saiu (estado.json) e os posts novos
+        if: always()
+        run: |
+          git config user.name "jetclean-bot"
+          git config user.email "cedu.live@gmail.com"
+          git add estado.json fila.json pecas
+          git diff --cached --quiet || (git commit -m "Instagram: estado depois do turno [skip ci]" && git pull --rebase -q origin main && git push -q origin HEAD:main)
