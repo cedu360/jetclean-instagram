@@ -100,7 +100,7 @@ const salvar = () => writeFileSync(ESTADO, JSON.stringify(estado, null, 1));
 
 const args = process.argv.slice(2), teste = args.includes("--teste");
 const [a, b, c] = args.filter((x) => x !== "--teste");
-if (!token && !teste) { console.error("Falta IG_TOKEN"); process.exit(1); }
+if (!token && !teste) { console.log("Falta o segredo IG_TOKEN (token do Instagram da JetClean). Nada publicado."); process.exit(0); }
 const fila = JSON.parse(readFileSync(join(aqui, "fila.json"), "utf8"));
 let pedidos;
 if (["FEED", "STORIES", "REELS"].includes(a) && b) pedidos = [{ avulso: { tipo: a, arquivo: b, legenda: c } }];
