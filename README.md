@@ -34,3 +34,9 @@ Antes de postar o robô lê o perfil e pula o que repetiria (mesma imagem, legen
 - `GEMINI_API_KEY`: chave grátis do Google AI Studio para os textos. Sem ela o robô usa os textos de reserva.
 
 Nada de seguir pessoas nem mandar direct automático: risco de bloqueio da conta.
+
+## Visual de estúdio (carros particulares)
+
+`preparar.py` recorta o carro da foto (roda no computador, com `rembg`) e salva em `fotos/recortes/`.
+Um tema com `"recortes": [...]` no `negocio.json` passa a sair com o carro num estúdio escuro com luz vermelha, piso e reflexo.
+Fotos novas: mandar para o Claude na conversa do projeto (não subir direto aqui: o repositório é público e a placa precisa ser borrada antes).

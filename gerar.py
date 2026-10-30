@@ -7,7 +7,7 @@
 #      python3 gerar.py --teste       gera 2 peças em teste/ sem mexer na fila
 import json, os, random, sys, time, urllib.request
 from datetime import datetime, timezone
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageChops
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 KIT, FOTOS, PECAS = (os.path.join(AQUI, p) for p in ("kit", "fotos", "pecas"))
@@ -105,6 +105,45 @@ def story(p, tema, pal):
     botao(d, 70, y + 30, NEG["contato"], 42); logo(c, 70, H - 200, 56)
     d.text((70, H - 120), NEG["rodape"].split(" · ")[-1], font=fonte("SemiBold", 34), fill=BRANCO); return c.convert("RGB")
 
+# Estúdio: o carro recortado (fotos/recortes/*.png, feitos com preparar.py) num cenário escuro com luz vermelha, piso e reflexo.
+def cena(W, H, hz, cor):
+    c = Image.new("RGB", (W, H), (6, 6, 8))
+    g = Image.new("L", (W, H), 0); ImageDraw.Draw(g).ellipse((W * 0.05, H * 0.2, W * 0.95, H * 0.85), fill=255)
+    c = Image.composite(Image.new("RGB", (W, H), cor), c, g.filter(ImageFilter.GaussianBlur(W * 0.12)).point(lambda v: int(v * 0.75)))
+    piso = Image.new("L", (1, H))
+    for y in range(H): piso.putpixel((0, y), 0 if y < hz else min(255, int(40 + 215 * (y - hz) / (H - hz))))
+    c = Image.composite(Image.new("RGB", (W, H), (4, 4, 5)), c, piso.resize((W, H))); d = ImageDraw.Draw(c)
+    d.line((0, hz, W, hz), fill=tuple(int(v * 0.6) for v in cor), width=2)
+    for k in range(3): x = int(W * (0.2 + 0.3 * k)); d.rounded_rectangle((x - 90, 30, x + 90, 42), 6, fill=(235, 235, 240))
+    return c
+def carro_no_estudio(c, nome, W, H, base, larg):
+    p = Image.open(os.path.join(FOTOS, "recortes", nome + ".png")).convert("RGBA")
+    s = min(W * larg / p.width, H * 0.42 / p.height); p = p.resize((int(p.width * s), int(p.height * s)), Image.LANCZOS)
+    rgb = ImageEnhance.Contrast(ImageEnhance.Color(p.convert("RGB")).enhance(1.15)).enhance(1.12); p = Image.merge("RGBA", (*rgb.split(), p.getchannel("A")))
+    x = (W - p.width) // 2 + random.randint(-20, 20); y = base - p.height
+    sh = Image.new("L", (W, H), 0); ImageDraw.Draw(sh).ellipse((x + 10, base - 40, x + p.width - 10, base + 20), fill=240)
+    c = Image.composite(Image.new("RGB", (W, H)), c, sh.filter(ImageFilter.GaussianBlur(25))).convert("RGBA")
+    r = p.transpose(Image.FLIP_TOP_BOTTOM); f = Image.new("L", (1, r.height))
+    for yy in range(r.height): f.putpixel((0, yy), max(0, int(90 * (1 - yy / (r.height * 0.5)))))
+    r.putalpha(ImageChops.multiply(r.getchannel("A"), f.resize(r.size)))
+    c.alpha_composite(r.filter(ImageFilter.GaussianBlur(2)), (x, base - 2)); c.alpha_composite(p, (x, y)); return c
+CORES_LUZ = [(120, 10, 16), (150, 14, 20), (90, 8, 12), (110, 20, 10)]
+def feed_estudio(p, tema, pal):
+    W, H = 1080, 1350; c = carro_no_estudio(cena(W, H, 820, random.choice(CORES_LUZ)), random.choice(tema["recortes"]), W, H, 960, random.uniform(0.82, 0.95))
+    d = ImageDraw.Draw(c); selo(d, 60, 80, tema["selo"]); escrever(d, p["gancho"], 60, 160, W - 120, 74, p["destaque"])
+    d.text((60, 1040), "  ·  ".join(p["pontos"]), font=fonte("SemiBold", 28), fill=(225, 225, 230))
+    botao(d, 60, 1110, NEG["contato"], 34); logo(c, 60, H - 100, 46)
+    d.text((W - 60 - d.textlength(NEG["rodape"], font=fonte("SemiBold", 30)), H - 88), NEG["rodape"], font=fonte("SemiBold", 30), fill=BRANCO)
+    return c.convert("RGB")
+def story_estudio(p, tema, pal):
+    W, H = 1080, 1920; c = carro_no_estudio(cena(W, H, 1180, random.choice(CORES_LUZ)), random.choice(tema["recortes"]), W, H, 1340, 0.95)
+    d = ImageDraw.Draw(c); selo(d, 70, 180, tema["selo"], 34); escrever(d, p["gancho"], 70, 280, W - 140, 96, p["destaque"])
+    y = 1400
+    for b in p["pontos"]: check(d, 70, y, b, 38); y += 68
+    botao(d, 70, y + 20, NEG["contato"], 42); logo(c, 70, H - 130, 56)
+    d.text((W - 70 - d.textlength("ITABIRITO - MG", font=fonte("SemiBold", 34)), H - 115), "ITABIRITO - MG", font=fonte("SemiBold", 34), fill=BRANCO)
+    return c.convert("RGB")
+
 def ahash(img):
     g = img.convert("L").resize((8, 8), Image.LANCZOS); px = list(g.tobytes()); m = sum(px) / 64
     return "".join("1" if v > m else "0" for v in px)
@@ -148,11 +187,12 @@ def nova_peca(slug, fila, usados, i, reserva_ok=False):
         pal = random.choice(PALETAS)
         layouts = [feed_a, feed_b] + ([feed_antes_depois] if tema.get("antes_depois") else [])
         if tema.get("antes_depois") and "antes" in t["gancho"].lower(): layouts = [feed_antes_depois]
+        if tema.get("recortes"): layouts = [feed_estudio]
         img = random.choice(layouts)(t, tema, pal); h = ahash(img)
         if all(dist(h, o) >= DIST_MINIMA for o in hashes): break
         print(f"  {slug}: ficou parecida com uma peça antiga, refazendo")
     else: print(f"  {slug}: não achei variação diferente o bastante, pulando"); return []
-    st = story(t, tema, pal); hs = ahash(st)
+    st = (story_estudio if tema.get("recortes") else story)(t, tema, pal); hs = ahash(st)
     pasta = os.path.join(AQUI, "teste") if TESTE else PECAS; os.makedirs(pasta, exist_ok=True)
     base = f"{slug}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M')}-{i}"
     img.save(os.path.join(pasta, f"feed-{base}.jpg"), "JPEG", quality=88); st.save(os.path.join(pasta, f"story-{base}.jpg"), "JPEG", quality=88)
